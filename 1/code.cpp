@@ -1,16 +1,14 @@
 #include <iostream>
 #include "numbers.dat" // Data - массив, Size - размер массива
-#ifdef __GNUC__
-#define __forceinline __attribute__((always_inline))
-#endif
-__forceinline bool is_prime(int n) {
+
+__attribute__((always_inline)) bool is_prime(int n) {
     if(n != 1 && n != 2 && n%2 != 0) {
-        for(int i = 3; i*i <= n; i+=2)
+        for(int i = 3; i * i <= n; i += 2)
             if(n%i == 0)
                 return false;
     }else if(n == 2)
         return true;
-    else if(n==1 || n%2 == 0)
+    else if(n == 1 || n%2 == 0)
         return false;
     return true;
 }
@@ -24,9 +22,11 @@ int prime_counter(int left, int right) {
                 i++;
                 counter++;
             }
-        }else
-            while(i < Size-1 && Data[i+1] == Data[i])
+        } else {
+            while(i < Size-1 && Data[i+1] == Data[i]) {
                 i++;
+            }
+        }
     }
     return counter;
 }
