@@ -1,21 +1,24 @@
+#include <cstddef>
+using std::size_t;
+
 class Matrix {
-    int rows, columns;
     int **data;
+    size_t rows, columns;
 public:
-    Matrix(const int rows, const int columns);
+    Matrix(const std::size_t rows, const std::size_t columns);
     ~Matrix();
     class Array {
-        int length;
         int *data;
+        size_t length;
     public:
-        Array(int*, int);
+        Array(int*, size_t);
         ~Array();
         int& operator[] (const int) const;
     };
-    int getRows();
-    int getColumns();
-    Array& operator[] (const int) const;
-    const Matrix& operator*=(const int);
-    bool operator==(const Matrix&) const;
-    bool operator!=(const Matrix&) const;
+    size_t getRows();
+    size_t getColumns();
+    const Array& operator[] (const int) const;
+    Matrix& operator*= (const int);
+    bool operator== (const Matrix&) const;
+    bool operator!= (const Matrix&) const;
 };
