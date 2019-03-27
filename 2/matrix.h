@@ -19,8 +19,8 @@ public:
     };
     size_t getRows();
     size_t getColumns();
-    const Array& operator[] (const int) const;
-    Array& operator[] (const int);
+    const Array operator[] (const int) const;
+    Array operator[] (const int);
     Matrix& operator*= (const int);
     bool operator== (const Matrix&) const;
     bool operator!= (const Matrix&) const;

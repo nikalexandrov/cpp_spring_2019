@@ -41,33 +41,32 @@ bool Matrix::operator!= (const Matrix &other) const {
 
 int Matrix::Array::operator[] (const int index) const {
     if(index >= 0 && index < length) {
-        int elem =  *(data + index);
-        delete this;
-        return elem;
+        return *(data + index);
     }
     delete this;
     throw std::out_of_range("Index is out of range!");
 }
 
-const Matrix::Array& Matrix::operator[] (const int index) const {
-    if(index >= 0 && index < rows)
-        return *(new Array(*(data + index), columns));
+const Matrix::Array Matrix::operator[] (const int index) const {
+    if(index >= 0 && index < rows){
+        Array arr(*(data + index), columns);
+        return arr;
+    }
     throw std::out_of_range("Index is out of range!");
 }
 
 int& Matrix::Array::operator[] (const int index) {
     if(index >= 0 && index < length) {
-        int& elem =  *(data + index);
-        delete this;
-        return elem;
+        return *(data + index);
     }
-    delete this;
     throw std::out_of_range("Index is out of range!");
 }
 
-Matrix::Array& Matrix::operator[] (const int index) {
-    if(index >= 0 && index < rows)
-        return *(new Array(*(data + index), columns));
+Matrix::Array Matrix::operator[] (const int index) {
+    if(index >= 0 && index < rows) {
+         Array arr(*(data + index), columns);
+         return arr;
+    }
     throw std::out_of_range("Index is out of range!");
 }
 
