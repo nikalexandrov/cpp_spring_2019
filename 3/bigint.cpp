@@ -22,31 +22,33 @@ BigInt::BigInt() : number(new uint64_t[mem_increment]), length(1), positive(true
     for(int i = 0; i < mem_increment; i++)
         number[i] = 0;
 }
-BigInt::BigInt(const int64_t num) : number(new uint64_t[mem_increment]), length(1), positive(num >= 0 ? true : false) {
-    number[0] = positive ? num : -num;
-    for(int i = 1; i < mem_increment; i++)
+BigInt::BigInt(const int64_t num) : number(new uint64_t[(mem_increment > 1 ? mem_increment : 2)]), length(1), positive(num >= 0 ? true : false) {
+    number[0] = (positive ? num : -num) % max_size();
+    number[1] = (positive ? num : (-num)) / max_size();
+    for(int i = 2; i < mem_increment; i++)
         number[i] = 0;
 }
 
-BigInt::BigInt(uint64_t *number_, std::size_t length_, bool positive_) : number(number_), length(length_), positive(positive_) {
+BigInt::BigInt(std::size_t length_, bool pos) : number(new uint64_t[length_]), length(length_), positive(pos) {
     for(int i = 0; i < length; i++)
         number[i] = 0;
 }
 // присваивание
 BigInt& BigInt::operator= (const BigInt& another) {
-    delete[] number;
+    if(number)
+        delete[] number;
     length = another.length;
-    number = new uint64_t[length];
-    for(int i = 0; i < length; i++)
+    const std::size_t arr_size = sizeof(another.number) / sizeof(uint64_t);
+    number = new uint64_t[arr_size];
+    for(int i = 0; i < arr_size; i++)
         number[i] = another.number[i];
     return *this;
 }
-BigInt::BigInt(const BigInt& num) : length(num.length), positive(num.positive) {
-    number = new uint64_t[sizeof(num.number)];
+BigInt::BigInt(const BigInt& num) : number(nullptr), length(sizeof(num.number) / sizeof(uint64_t)), positive(num.positive) {
+    number = new uint64_t[length];
     for(int i = 0; i < length; i++)
         number[i] = num.number[i];
-    for(int i = length; i < sizeof(number); i++)
-        number[i] = 0;
+    length = num.length;
 }
 // унарный минус
 BigInt BigInt::operator- () const {
@@ -57,8 +59,10 @@ BigInt BigInt::operator- () const {
 }
 // арифметические операторы между BigInt
 BigInt BigInt::operator+ (const BigInt& num) const {
-    const std::size_t len = length > num.length ? length + mem_increment : num.length + mem_increment;
-    BigInt res(new uint64_t[len], len, true);
+    const std::size_t len = length > num.length ?
+                            sizeof(number) / sizeof(uint64_t) + (sizeof(number) / sizeof(uint64_t) == length) * mem_increment :
+                            sizeof(num.number) / sizeof(uint64_t) + (sizeof(num.number) / sizeof(uint64_t) == num.length) * mem_increment;
+    BigInt res(len, true);
     int flag = false;
     if(positive == num.positive) {
         res.positive = positive;
@@ -105,7 +109,7 @@ BigInt BigInt::operator+ (const BigInt& num) const {
     return res;
 }
 BigInt BigInt::operator- (const BigInt& num) const {
-    return operator+(-num);
+    return operator+ (-num);
 }
 // арифметические операторы между BigInt и int
 BigInt BigInt::operator+ (const int num) const {
@@ -121,7 +125,7 @@ BigInt operator- (const int first, const BigInt& second) {
     return BigInt(first) - second;
 }
 // операторы сравнения между BigInt
-bool BigInt::operator==(const BigInt& num) const {
+bool BigInt::operator== (const BigInt& num) const {
     if(positive == num.positive && length == num.length) {
         for(int i = 0; i < length; i++)
             if(number[i] != num.number[i])

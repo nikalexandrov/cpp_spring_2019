@@ -6,10 +6,10 @@ class BigInt {
     uint64_t *number;
     std::size_t length;
     bool positive;
-    static const std::size_t mem_increment = 10; // на сколько uint64_t выделяем памяти за раз
+    static const std::size_t mem_increment = 1; // на сколько uint64_t выделяем памяти за раз
     static const uint64_t max_size();
     const bool abs_bigger_than(const BigInt&) const;
-    BigInt(uint64_t*, std::size_t, bool);
+    BigInt(std::size_t, bool);
 public:
     BigInt();
     BigInt(const int64_t);
