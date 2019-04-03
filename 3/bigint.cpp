@@ -18,37 +18,49 @@ const bool BigInt::abs_bigger_than(const BigInt& another) const {
     } else return (length > another.length);
 }
 // конструкторы
-BigInt::BigInt() : number(new uint64_t[mem_increment]), length(1), positive(true) {
-    for(int i = 0; i < mem_increment; i++)
+BigInt::BigInt() : number(new uint64_t[mem_increment]), length(1), max_length(mem_increment), positive(true) {
+    for(int i = 0; i < max_length; i++)
         number[i] = 0;
 }
-BigInt::BigInt(const int64_t num) : number(new uint64_t[(mem_increment > 1 ? mem_increment : 2)]), length(1), positive(num >= 0 ? true : false) {
+BigInt::BigInt(const int64_t num) : number(new uint64_t[((mem_increment > 2) ? mem_increment : 2)]),
+                                    length(1),
+                                    max_length((mem_increment > 2) ? mem_increment : 2),
+                                    positive(num >= 0 ? true : false) {
     number[0] = (positive ? num : -num) % max_size();
     number[1] = (positive ? num : (-num)) / max_size();
-    for(int i = 2; i < mem_increment; i++)
+    for(int i = 2; i < max_length; i++)
         number[i] = 0;
 }
 
-BigInt::BigInt(std::size_t length_, bool pos) : number(new uint64_t[length_]), length(length_), positive(pos) {
-    for(int i = 0; i < length; i++)
+BigInt::BigInt(const std::size_t max_length_, const bool pos) : number(nullptr),
+                                                                length(max_length_),
+                                                                max_length(max_length_),
+                                                                positive(pos) {
+    number = new uint64_t[max_length];
+    for(int i = 0; i < max_length; i++)
         number[i] = 0;
+}
+BigInt::BigInt(const BigInt& num) : number(new uint64_t[num.max_length]),
+                                    length(num.length), 
+                                    max_length(num.max_length),
+                                    positive(num.positive) {
+    for(int i = 0; i < max_length; i++)
+        number[i] = num.number[i];
 }
 // присваивание
 BigInt& BigInt::operator= (const BigInt& another) {
     if(number)
         delete[] number;
-    length = another.length;
-    const std::size_t arr_size = sizeof(another.number) / sizeof(uint64_t);
-    number = new uint64_t[arr_size];
-    for(int i = 0; i < arr_size; i++)
+    number = new uint64_t[another.max_length];
+    max_length = another.max_length;
+    length = max_length;
+    for(int i = 0; i < max_length; i++)
         number[i] = another.number[i];
+    int decr_len = 1;
+    while(decr_len < max_length && number[max_length - decr_len] == 0)
+        decr_len++;
+    length -= (decr_len - 1);
     return *this;
-}
-BigInt::BigInt(const BigInt& num) : number(nullptr), length(sizeof(num.number) / sizeof(uint64_t)), positive(num.positive) {
-    number = new uint64_t[length];
-    for(int i = 0; i < length; i++)
-        number[i] = num.number[i];
-    length = num.length;
 }
 // унарный минус
 BigInt BigInt::operator- () const {
@@ -60,8 +72,8 @@ BigInt BigInt::operator- () const {
 // арифметические операторы между BigInt
 BigInt BigInt::operator+ (const BigInt& num) const {
     const std::size_t len = length > num.length ?
-                            sizeof(number) / sizeof(uint64_t) + (sizeof(number) / sizeof(uint64_t) == length) * mem_increment :
-                            sizeof(num.number) / sizeof(uint64_t) + (sizeof(num.number) / sizeof(uint64_t) == num.length) * mem_increment;
+                            max_length + (max_length == length) * mem_increment :
+                            num.max_length + (num.max_length == num.length) * mem_increment;
     BigInt res(len, true);
     int flag = false;
     if(positive == num.positive) {

@@ -5,6 +5,7 @@
 class BigInt {
     uint64_t *number;
     std::size_t length;
+    std::size_t max_length;
     bool positive;
     static const std::size_t mem_increment = 1; // на сколько uint64_t выделяем памяти за раз
     static const uint64_t max_size();
