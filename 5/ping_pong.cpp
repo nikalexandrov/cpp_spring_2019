@@ -22,5 +22,6 @@ int main() {
 
     t2.detach();
     t1.join();
-return 0;
+    
+    return 0;
 }
