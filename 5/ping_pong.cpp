@@ -1,6 +1,5 @@
 #include <thread>
 #include <atomic>
-#include <chrono>
 #include <iostream>
 
 static const int max_count = 500000;
