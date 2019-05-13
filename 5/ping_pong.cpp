@@ -20,7 +20,7 @@ int main() {
     std::thread t1(ping_pong, "ping", true);
     std::thread t2(ping_pong, "pong", false);
 
-    t2.detach();
+    t2.join();
     t1.join();
     
     return 0;
