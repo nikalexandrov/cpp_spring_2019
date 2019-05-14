@@ -5,5 +5,3 @@ gen:
 	g++ -o gen generator.cpp -O2
 	./gen
 	rm gen
-clean:
-	rm *.bin
